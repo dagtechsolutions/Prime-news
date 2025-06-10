@@ -10,17 +10,23 @@
     <header class="site-header">
         <div class="container">
             <h1 class="site-title"><a href="/">Prime News</a></h1>
+
+            <!-- Hamburger Menu Button -->
+            <button class="nav-toggle" aria-label="toggle navigation">
+                <span class="hamburger"></span>
+            </button>
+
             <nav class="main-navigation">
                 <ul>
                     <% menuItems.forEach(item => { %>
-                        <li class="<%= item.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '') === 'maggie\'s-blog' ? 'blog-link' : (item.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '') === 'ict-monitor' ? 'ict-link' : '') %>">
+                        <li class="<%= item.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '') === 'maggie\'s-blog' ? 'blog-link' : (item.toLowerCase().replace(/\s+/g, '') === 'ictmonitor' ? 'ict-link' : '') %>">
                             <a href="/category/<%= item.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '') %>"
                                class="<%= (typeof currentCategory !== 'undefined' && currentCategory.toLowerCase() === item.toLowerCase()) ? 'active' : '' %>">
                                 <%= item %>
                             </a>
                         </li>
                     <% }); %>
-                    <li><a href="/admin/dashboard">Admin</a></li> <!-- Simple link to admin -->
+                    <li><a href="/admin/dashboard">Admin</a></li>
                 </ul>
             </nav>
         </div>
