@@ -1,0 +1,50 @@
+<%- include('partials/header', { pageTitle: 'Home', menuItems: menuItems }) %>
+
+<div class="container">
+    <section class="hero-section">
+        <h2>Welcome to Prime News!</h2>
+        <p>Your source for the latest updates across the globe.</p>
+    </section>
+
+    <% if (featuredArticles && featuredArticles.length > 0) { %>
+    <section>
+        <h2>Top Stories</h2>
+        <div class="news-grid">
+            <% featuredArticles.slice(0, 3).forEach(article => { %>
+                <%- include('partials/article_card', { article: article }) %>
+            <% }); %>
+        </div>
+    </section>
+    <% } %>
+
+    <%
+    const displayCategories = ["Politics", "Business", "ICT Monitor", "Maggie's Blog"];
+    displayCategories.forEach(catName => {
+        const categoryArticles = articles.filter(a => a.category === catName).slice(0, 3);
+        if (categoryArticles.length > 0) {
+    %>
+        <section>
+            <h2><%= catName %></h2>
+            <div class="news-grid">
+                <% categoryArticles.forEach(article => { %>
+                    <%- include('partials/article_card', { article: article }) %>
+                <% }); %>
+            </div>
+            <a href="/category/<%= catName.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '') %>" class="read-more">View all <%= catName %> &rarr;</a>
+        </section>
+    <%
+        }
+    });
+    %>
+
+    <section>
+        <h2>Latest News</h2>
+        <div class="news-grid">
+            <% articles.slice(0, 6).forEach(article => { %>
+                 <%- include('partials/article_card', { article: article }) %>
+            <% }); %>
+        </div>
+    </section>
+</div>
+
+<%- include('partials/footer') %>
