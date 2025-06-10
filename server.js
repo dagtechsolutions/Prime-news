@@ -1,8 +1,23 @@
+require('dotenv').config();
 const express = require('express');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const methodOverride = require('method-override');
 const path = require('path');
-const app = express();
-const PORT = 3000;
 
+const app = express();
+
+
+// MongoDB connection
+const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/prime-news';
+mongoose.connect(mongoUri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => {
+  console.log('MongoDB connected');
+}).catch(err => {
+  console.error('MongoDB connection error:', err);
+});
 // Serve static files from the "public" directory
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -67,6 +82,10 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+//app.listen(PORT, () => {
+    //console.log(`Prime News server running at http://localhost:${PORT}`);
+//});
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Prime News server running at http://localhost:${PORT}`);
+  console.log(`Prime News running on port ${PORT}`);
 });
