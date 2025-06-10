@@ -3,8 +3,9 @@ const router = express.Router();
 const articleDb = require('../data/articles');
 const menuItems = articleDb.getCategories();
 
+// This is a placeholder for real authentication.
 const requireAdmin = (req, res, next) => {
-  next(); // Bypass for demo
+  next();
 };
 
 // Admin Dashboard
@@ -58,15 +59,15 @@ router.get('/articles/edit/:id', requireAdmin, async (req, res, next) => {
         categories: menuItems
       });
     } else {
-      next();
+      next(); // Will trigger 404 handler
     }
   } catch (err) {
     next(err);
   }
 });
 
-// Handle article update
-router.post('/articles/edit/:id', requireAdmin, async (req, res, next) => {
+// **FIXED**: Changed from router.post to router.put to match the form's method override
+router.put('/articles/edit/:id', requireAdmin, async (req, res, next) => {
   try {
     const { title, category, author, image, content, tags } = req.body;
     const updatedData = {
@@ -77,7 +78,7 @@ router.post('/articles/edit/:id', requireAdmin, async (req, res, next) => {
       content,
       tags: tags ? tags.split(',').map(tag => tag.trim()) : []
     };
-    // Remove undefined fields
+    // Remove undefined fields so they don't overwrite existing data
     Object.keys(updatedData).forEach(key => updatedData[key] === undefined && delete updatedData[key]);
     await articleDb.update(req.params.id, updatedData);
     res.redirect('/admin/dashboard');
@@ -86,8 +87,8 @@ router.post('/articles/edit/:id', requireAdmin, async (req, res, next) => {
   }
 });
 
-// Handle article deletion
-router.post('/articles/delete/:id', requireAdmin, async (req, res, next) => {
+// **FIXED**: Changed from router.post to router.delete to match the form's method override
+router.delete('/articles/delete/:id', requireAdmin, async (req, res, next) => {
   try {
     await articleDb.delete(req.params.id);
     res.redirect('/admin/dashboard');
