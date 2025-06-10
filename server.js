@@ -1,46 +1,45 @@
+require('dotenv').config();
 const express = require('express');
+const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const methodOverride = require('method-override'); // For PUT/DELETE from forms
+const methodOverride = require('method-override');
 const path = require('path');
 
-const indexRoutes = require('./routes/index');
-const adminRoutes = require('./routes/admin');
-
 const app = express();
-const PORT = process.env.PORT || 3000;
-
-// View engine setup
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
 
 // Middleware
+app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-app.use(methodOverride('_method')); // Allows PUT/DELETE via _method query param in forms
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(methodOverride('_method'));
 
 // Routes
-app.use('/', indexRoutes);
-app.use('/admin', adminRoutes); // All admin routes will be prefixed with /admin
+app.use('/', require('./routes/index'));
+app.use('/admin', require('./routes/admin'));
 
-// Basic Error Handling (improve for production)
-app.use((req, res, next) => {
-    const error = new Error('Not Found');
-    error.status = 404;
-    next(error);
+// MongoDB connection
+const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/prime-news';
+mongoose.connect(mongoUri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => {
+  console.log('MongoDB connected');
+}).catch(err => {
+  console.error('MongoDB connection error:', err);
 });
 
-app.use((error, req, res, next) => {
-    res.status(error.status || 500);
-    res.render('error', { // You'll need an error.ejs view
-        message: error.message,
-        error: process.env.NODE_ENV === 'development' ? error : {},
-        menuItems: require('./data/articles').getCategories(), // Pass menu items
-        pageTitle: "Error"
-    });
+// 404 handler
+app.use((req, res) => {
+  res.status(404).render('404', { pageTitle: 'Not Found' });
 });
 
+// Error handler
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).render('500', { pageTitle: 'Server Error' });
+});
 
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Prime News server running on http://localhost:${PORT}`);
+  console.log(`Prime News running on port ${PORT}`);
 });
