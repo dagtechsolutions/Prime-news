@@ -1,52 +1,62 @@
 const express = require('express');
 const router = express.Router();
-const articleDb = require('../data/articles'); // Our in-memory "DB"
+const articleDb = require('../data/articles'); // MongoDB-based service
 
 const menuItems = articleDb.getCategories();
 
 // Homepage
-router.get('/', (req, res) => {
-    const allArticles = articleDb.getAll();
-    // For simplicity, featured could be the latest or based on some logic
+router.get('/', async (req, res, next) => {
+  try {
+    const allArticles = await articleDb.getAll();
     const featuredArticles = allArticles.slice(0, 3);
     res.render('index', {
-        pageTitle: 'Home',
-        articles: allArticles,
-        featuredArticles: featuredArticles,
-        menuItems: menuItems
+      pageTitle: 'Home',
+      articles: allArticles,
+      featuredArticles: featuredArticles,
+      menuItems: menuItems
     });
+  } catch (err) {
+    next(err);
+  }
 });
 
 // Category page
-router.get('/category/:categorySlug', (req, res, next) => {
+router.get('/category/:categorySlug', async (req, res, next) => {
+  try {
     const categorySlug = req.params.categorySlug;
-    // Find category name by slug (simple mapping for this demo)
     const categoryName = menuItems.find(item => item.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '') === categorySlug);
 
     if (!categoryName) {
-        return next(); // 404
+      return next();
     }
-    const articlesInCategory = articleDb.getByCategory(categoryName);
+    const articlesInCategory = await articleDb.getByCategory(categoryName);
     res.render('category', {
-        pageTitle: categoryName,
-        currentCategory: categoryName,
-        articlesInCategory: articlesInCategory,
-        menuItems: menuItems
+      pageTitle: categoryName,
+      currentCategory: categoryName,
+      articlesInCategory: articlesInCategory,
+      menuItems: menuItems
     });
+  } catch (err) {
+    next(err);
+  }
 });
 
 // Single article page
-router.get('/article/:slug', (req, res, next) => {
-    const article = articleDb.getBySlug(req.params.slug);
+router.get('/article/:slug', async (req, res, next) => {
+  try {
+    const article = await articleDb.getBySlug(req.params.slug);
     if (article) {
-        res.render('article', {
-            pageTitle: article.title,
-            article: article,
-            menuItems: menuItems
-        });
+      res.render('article', {
+        pageTitle: article.title,
+        article: article,
+        menuItems: menuItems
+      });
     } else {
-        next(); // 404
+      next();
     }
+  } catch (err) {
+    next(err);
+  }
 });
 
 module.exports = router;
