@@ -1,4 +1,25 @@
-// ... existing imports and setup
+require('dotenv').config();
+const express = require('express');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+const methodOverride = require('method-override');
+const path = require('path');
+
+const app = express();
+
+const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/prime-news';
+mongoose.connect(mongoUri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => {
+  console.log('MongoDB connected');
+}).catch(err => {
+  console.error('MongoDB connection error:', err);
+});
+
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(bodyParser.json());
+app.use(methodOverride('_method'));
 
 // Mongoose schema/model for articles
 const articleSchema = new mongoose.Schema({
@@ -12,24 +33,13 @@ const articleSchema = new mongoose.Schema({
 });
 const Article = mongoose.model('Article', articleSchema);
 
-// GET all articles (already present)
+// API endpoint to get all articles
 app.get('/api/articles', async (req, res) => {
     const articles = await Article.find().sort({ date: -1 });
     res.json(articles);
 });
 
-// GET single article by ID
-app.get('/api/articles/:id', async (req, res) => {
-    try {
-        const article = await Article.findById(req.params.id);
-        if (!article) return res.status(404).json({ error: 'Article not found' });
-        res.json(article);
-    } catch (err) {
-        res.status(400).json({ error: 'Invalid ID' });
-    }
-});
-
-// CREATE new article
+// API endpoint to create a new article
 app.post('/api/articles', async (req, res) => {
     try {
         const newArticle = new Article(req.body);
@@ -40,26 +50,31 @@ app.post('/api/articles', async (req, res) => {
     }
 });
 
-// UPDATE article by ID
+// API endpoint to update an article
 app.put('/api/articles/:id', async (req, res) => {
     try {
         const article = await Article.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!article) return res.status(404).json({ error: 'Article not found' });
         res.json(article);
     } catch (err) {
         res.status(400).json({ error: err.message });
     }
 });
 
-// DELETE article by ID
+// API endpoint to delete an article
 app.delete('/api/articles/:id', async (req, res) => {
     try {
-        const article = await Article.findByIdAndDelete(req.params.id);
-        if (!article) return res.status(404).json({ error: 'Article not found' });
+        await Article.findByIdAndDelete(req.params.id);
         res.json({ message: 'Article deleted' });
     } catch (err) {
         res.status(400).json({ error: err.message });
     }
 });
 
-// ... existing static files and listen
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Prime News running on port ${PORT}`);
+});
