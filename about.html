@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>About Us - Prime News</title>
+        <meta content="width=device-width, initial-scale=1.0" name="viewport">
+        <!-- Add other meta tags as needed -->
+
+        <!-- Favicon -->
+        <link href="img/favicon.ico" rel="icon">
+
+        <!-- CSS Libraries -->
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+        <link href="css/style.css" rel="stylesheet">
+    </head>
+
+    <body>
+        <!-- Top Header & Nav Placeholder -->
+         <div id="header-placeholder"></div>
+
+        <!-- Breadcrumb Start -->
+        <div class="breadcrumb-wrap">
+            <div class="container-fluid">
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                    <li class="breadcrumb-item active">About Us</li>
+                </ul>
+            </div>
+        </div>
+        <!-- Breadcrumb End -->
+
+        <!-- About Us Content Start -->
+        <div class="container-fluid py-5">
+            <div class="container">
+                <div class="section-title">
+                    <h1 class="text-center mb-5">About Prime News</h1>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <h2>Our Mission</h2>
+                        <p>At Prime News, our mission is to deliver timely, accurate, and impartial news to our readers across the globe. We are committed to upholding the highest standards of journalism, providing in-depth analysis and diverse perspectives on the stories that matter most. We believe in the power of information to enlighten, engage, and empower communities.</p>
+                        
+                        <h2>Our Story</h2>
+                        <p>Founded in 2025, Prime News started as a small blog with a big idea: to create a news platform that cuts through the noise. In a world saturated with information, we saw the need for a source that is not only reliable but also accessible. From our humble beginnings, we have grown into a dedicated team of journalists, editors, and technologists passionate about shaping the future of digital news.</p>
+
+                        <h2>Our Team</h2>
+                        <p>Our team is composed of seasoned journalists and energetic young reporters from diverse backgrounds. This blend of experience and fresh perspective allows us to cover a wide range of topics with the depth and nuance they deserve. We are headquartered in Abuja, Nigeria, but our network of contributors spans several continents, giving us a truly global outlook.</p>
+
+                        <h2>Our Values</h2>
+                        <ul>
+                            <li><strong>Integrity:</strong> We adhere to a strict code of ethics. Our reporting is fair, honest, and free from external influence.</li>
+                            <li><strong>Accuracy:</strong> We are meticulous about fact-checking and verifying our sources to ensure that our content is reliable.</li>
+                            <li><strong>Clarity:</strong> We strive to present complex issues in a clear, understandable, and engaging manner.</li>
+                            <li><strong>Accountability:</strong> We are transparent about our processes and accountable to our readers. We promptly correct any errors and welcome feedback.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- About Us Content End -->
+        
+        <!-- Footer Placeholder -->
+        <div id="footer-placeholder"></div>
+
+        <!-- JS Libraries -->
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+        <script src="js/main.js"></script>
+        <script>
+            // Load Header and Footer
+            $(function(){
+                // For simplicity, we'll just link back to home, but a real site would use a more robust include method
+                $("#header-placeholder").load("index.html .header");
+                $("#footer-placeholder").load("index.html .footer, index.html .footer-bottom");
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Admin Panel - Prime News</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    
+    <!-- CSS Libraries -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link href="/css/admin.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" data-backdrop="static" data-keyboard="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Admin Login</h5>
+                </div>
+                <div class="modal-body">
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" class="form-control" id="loginEmail" value="admin@primenews.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" class="form-control" id="loginPassword" value="admin123" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">Login</button>
+                    </form>
+                    <div id="loginError" class="alert alert-danger mt-3" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="adminPanel" style="display: none;">
+        <!-- Admin Header -->
+        <div class="admin-header">
+            <div class="container-fluid">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h4><i class="fas fa-newspaper"></i> Prime News Admin Panel</h4>
+                    </div>
+                    <div class="col-md-6 text-right">
+                        <span class="mr-3">Welcome, <span id="currentUser"></span></span>
+                        <button class="btn btn-outline-light btn-sm" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-md-2 admin-sidebar">
+                    <div class="sidebar-item active" onclick="showSection('dashboard')">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                    </div>
+                    <div class="sidebar-item" onclick="showSection('create-post')">
+                        <i class="fas fa-plus"></i> Create Post
+                    </div>
+                    <div class="sidebar-item" onclick="showSection('manage-posts')">
+                        <i class="fas fa-edit"></i> Manage Posts
+                    </div>
+                    <div class="sidebar-item" onclick="showSection('categories')">
+                        <i class="fas fa-tags"></i> Categories
+                    </div>
+                    <div class="sidebar-item" onclick="showSection('settings')">
+                        <i class="fas fa-cog"></i> Settings
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="col-md-10">
+                    
+                    <!-- Dashboard Section -->
+                    <div id="dashboard" class="main-content">
+                        <h2>Dashboard</h2>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="stats-card">
+                                    <h3 id="total-posts">0</h3>
+                                    <p>Total Posts</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stats-card">
+                                    <h3 id="published-posts">0</h3>
+                                    <p>Published</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stats-card">
+                                    <h3 id="draft-posts">0</h3>
+                                    <p>Drafts</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stats-card">
+                                    <h3 id="today-posts">0</h3>
+                                    <p>Today</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row mt-4">
+                            <div class="col-md-8">
+                                <h4>Recent Posts</h4>
+                                <div id="recent-posts-list">
+                                    <!-- Recent posts will be populated here -->
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <h4>Quick Actions</h4>
+                                <button class="btn btn-primary btn-block mb-2" onclick="showSection('create-post')">
+                                    <i class="fas fa-plus"></i> Create New Post
+                                </button>
+                                <button class="btn btn-success btn-block mb-2" onclick="showSection('manage-posts')">
+                                    <i class="fas fa-edit"></i> Manage Posts
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Create Post Section -->
+                    <div id="create-post" class="main-content" style="display: none;">
+                        <h2 id="post-form-title">Create New Post</h2>
+                        <form id="post-form">
+                            <input type="hidden" id="post-id">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="form-group">
+                                        <label>Post Title</label>
+                                        <input type="text" class="form-control" id="post-title" placeholder="Enter post title" required>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label>Content</label>
+                                        <div class="mb-2">
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="formatText('bold')">
+                                                <i class="fas fa-bold"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="formatText('italic')">
+                                                <i class="fas fa-italic"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="formatText('underline')">
+                                                <i class="fas fa-underline"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="insertImage()">
+                                                <i class="fas fa-image"></i>
+                                            </button>
+                                        </div>
+                                        <div class="rich-editor" id="post-content" contenteditable="true" placeholder="Write your article content here..."></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Category</label>
+                                        <select class="form-control" id="post-category" required>
+                                            <option value="">Select Category</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label>Post Type</label>
+                                        <select class="form-control" id="post-type">
+                                            <option value="regular">Regular News</option>
+                                            <option value="top-news">Top News</option>
+                                            <option value="featured">Featured</option>
+                                            <option value="breaking">Breaking News</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label>Status</label>
+                                        <select class="form-control" id="post-status">
+                                            <option value="draft">Draft</option>
+                                            <option value="published">Published</option>
+                                            <option value="scheduled">Scheduled</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label>Featured Image</label>
+                                        <input type="file" class="form-control-file" id="image-upload" accept="image/*">
+                                        <input type="text" class="form-control mt-2" id="post-image" placeholder="Or enter image URL">
+                                        <img id="image-preview" class="image-preview" style="display: none;">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label>Tags (comma separated)</label>
+                                        <input type="text" class="form-control" id="post-tags" placeholder="AI, Technology, Innovation">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label>Publish Date</label>
+                                        <input type="datetime-local" class="form-control" id="post-date">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label>Meta Description</label>
+                                        <textarea class="form-control" id="post-meta-description" rows="3" placeholder="SEO meta description"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <button type="button" class="btn btn-secondary" onclick="previewPost()">
+                                        <i class="fas fa-eye"></i> Preview
+                                    </button>
+                                    <button type="submit" class="btn btn-primary" id="save-post-btn">
+                                        <i class="fas fa-save"></i> Save Post
+                                    </button>
+                                    <button type="button" class="btn btn-success" onclick="publishPost()">
+                                        <i class="fas fa-globe"></i> Publish Now
+                                    </button>
+                                    <button type="button" class="btn btn-warning" onclick="clearForm()">
+                                        <i class="fas fa-times"></i> Clear
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Manage Posts Section -->
+                    <div id="manage-posts" class="main-content" style="display: none;">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h2>Manage Posts</h2>
+                            <div>
+                                <input type="text" class="form-control d-inline-block w-auto mr-2" id="search-posts" placeholder="Search posts...">
+                                <select class="form-control d-inline-block w-auto mr-2" id="filter-category">
+                                    <option value="">All Categories</option>
+                                </select>
+                                <select class="form-control d-inline-block w-auto" id="filter-status">
+                                    <option value="">All Status</option>
+                                    <option value="published">Published</option>
+                                    <option value="draft">Draft</option>
+                                    <option value="scheduled">Scheduled</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div id="posts-list">
+                            <!-- Posts will be populated here -->
+                        </div>
+
+                        <!-- Pagination -->
+                        <nav id="posts-pagination" class="mt-4">
+                            <ul class="pagination justify-content-center">
+                                <!-- Pagination will be populated here -->
+                            </ul>
+                        </nav>
+                    </div>
+
+                    <!-- Categories Section -->
+                    <div id="categories" class="main-content" style="display: none;">
+                        <h2>Manage Categories</h2>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4 id="category-form-title">Add New Category</h4>
+                                <form id="category-form">
+                                    <input type="hidden" id="category-id">
+                                    <div class="form-group">
+                                        <label>Category Name</label>
+                                        <input type="text" class="form-control" id="category-name" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Description</label>
+                                        <textarea class="form-control" id="category-description" rows="3"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Icon Class (Font Awesome)</label>
+                                        <input type="text" class="form-control" id="category-icon" placeholder="fas fa-microchip">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Color</label>
+                                        <input type="color" class="form-control" id="category-color" value="#16A085">
+                                    </div>
+                                    <button type="submit" class="btn btn-primary" id="category-submit-btn">Add Category</button>
+                                    <button type="button" class="btn btn-secondary" onclick="clearCategoryForm()" id="category-cancel-btn" style="display: none;">Cancel</button>
+                                </form>
+                            </div>
+                            <div class="col-md-6">
+                                <h4>Existing Categories</h4>
+                                <div id="categories-list">
+                                    <!-- Categories will be listed here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Settings Section -->
+                    <div id="settings" class="main-content" style="display: none;">
+                        <h2>Settings</h2>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4>User Profile</h4>
+                                <form id="profile-form">
+                                    <div class="form-group">
+                                        <label>Username</label>
+                                        <input type="text" class="form-control" id="profile-username" disabled>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Email</label>
+                                        <input type="email" class="form-control" id="profile-email" disabled>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Role</label>
+                                        <input type="text" class="form-control" id="profile-role" disabled>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Profile management coming soon</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Modal -->
+    <div class="modal fade" id="previewModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Post Preview</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body" id="preview-content">
+                    <!-- Preview content will be shown here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Upload Modal -->
+    <div class="modal fade" id="imageModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Insert Image</h5>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="image-form">
+                        <div class="form-group">
+                            <label>Upload Image</label>
+                            <input type="file" class="form-control-file" id="modal-image-upload" accept="image/*">
+                        </div>
+                        <div class="form-group">
+                            <label>Or Image URL</label>
+                            <input type="text" class="form-control" id="modal-image-url" placeholder="https://example.com/image.jpg">
+                        </div>
+                        <div class="form-group">
+                            <label>Alt Text</label>
+                            <input type="text" class="form-control" id="image-alt" placeholder="Image description">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="insertImageIntoEditor()">Insert Image</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script src="/js/api.js"></script>
+    <script src="/js/admin.js"></script>
+</body>
+</html>
